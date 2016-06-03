@@ -1,6 +1,8 @@
 var GAME_WIDTH = 608;
 var GAME_HEIGHT = 608;
 var GAME_SCALE = 4;
+var DIM = 18;
+
 var gameport = document.getElementById("gameport");
 var renderer = PIXI.autoDetectRenderer(608,608, {BackgroundColor: 0x3344ee});
 
@@ -109,10 +111,9 @@ document.addEventListener('keyup', onKeyUp);
 function is_death()
 {
   water=world.getObject('water').data;
-  if(player.position == water);
-  {
+  if (water[(player.gy+dy-1)*12 + (player.gx+dx)] != 0) {
     you_won();
-
+    return;
   }
 
 }
@@ -143,9 +144,12 @@ function onKeyUp(key)
 //function that handles key inputs
 function onKeyDown(key)
 {
+  var dx =0;
+  var dy =0;
   var new_x;
   var new_y;
   //move player calls the function to change the sprite to moving
+  //is_death();
   move_player();
   //checks to see if player has moved into the winning zone.
   if(player.position.x <=150 && player.position.y <= 150)
@@ -154,22 +158,23 @@ function onKeyDown(key)
   }
  if(key.keyCode ===87 || key.keyCode === 38)
  {
-
+   dy = -1;
    //checks to make sure you arent at the edge of the world
    if(player.position.y >= 0)
    {
-     new_y = player.position.y -20;
+     new_y = player.position.y -18;
      createjs.Tween.get(player.position).to({x: player.position.x, y: new_y},500);
 
    }
  }
    if (key.keyCode === 83 || key.keyCode === 40)
    {
+     dy = 1;
        //checks to make sure you arent at the edge of the world
        if(player.position.y <= 560)
        {
 
-          new_y = player.position.y +20;
+          new_y = player.position.y +18;
           createjs.Tween.get(player.position).to({x: player.position.x, y: new_y},500);
        }
 
@@ -177,10 +182,11 @@ function onKeyDown(key)
    //65 and 37 are A and the left arrow in ascii
    if (key.keyCode === 65 || key.keyCode === 37)
    {
+      dx = -1;
        //checks to make sure you arent at the edge of the world
        if (player.position.x >= 10)
        {//moves player
-           new_x = player.position.x -20;
+           new_x = player.position.x -18;
            createjs.Tween.get(player.position).to({x: new_x, y: player.position.y},500);
        }
    }
@@ -189,10 +195,11 @@ function onKeyDown(key)
    // Right arrow is 39
    if (key.keyCode === 68 || key.keyCode === 39)
    {
+      dx = 1;
        //checks to make sure you arent at the edge of the world
        if (player.position.x <= 560)
        {
-         new_x = player.position.x +20;
+         new_x = player.position.x +18;
          createjs.Tween.get(player.position).to({x: new_x, y: player.position.y},500);
        }
    }//end of keydown
