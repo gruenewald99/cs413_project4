@@ -8,6 +8,7 @@ var renderer = PIXI.autoDetectRenderer(608,608, {BackgroundColor: 0x3344ee});
 
 var stage = new PIXI.Container();
 
+
 var player = new PIXI.Container();
 var water;
 // load in the images
@@ -18,6 +19,65 @@ var win_back = PIXI.Texture.fromImage("win.png");
 //save the different scenes
 var scene1 = new PIXI.Container();
 var scene2 = new PIXI.Container();
+var emitter = new PIXI.particles.Emitter(
+  scene2,
+
+  // I downloaded the image from http://pixijs.github.io/pixi-particles-editor/
+  [PIXI.Texture.fromImage('particle.png')],
+
+  // Emitter configuration; This was copied and pasted from the file
+  // downloaded from http://pixijs.github.io/pixi-particles-editor/
+  {
+  	"alpha": {
+  		"start": 1,
+  		"end": 0
+  	},
+  	"scale": {
+  		"start": 1,
+  		"end": 1,
+  		"minimumScaleMultiplier": 1
+  	},
+  	"color": {
+  		"start": "#faeb14",
+  		"end": "#ff3d54"
+  	},
+  	"speed": {
+  		"start": 100,
+  		"end": 50
+  	},
+  	"acceleration": {
+  		"x": 7,
+  		"y": 0
+  	},
+  	"startRotation": {
+  		"min": 0,
+  		"max": 360
+  	},
+  	"rotationSpeed": {
+  		"min": 0,
+  		"max": 0
+  	},
+  	"lifetime": {
+  		"min": 0.1,
+  		"max": 1
+  	},
+  	"blendMode": "darken",
+  	"frequency": 0.001,
+  	"emitterLifetime": -1,
+  	"maxParticles": 1000,
+  	"pos": {
+  		"x": 0,
+  		"y": 0
+  	},
+  	"addAtBack": false,
+  	"spawnType": "circle",
+  	"spawnCircle": {
+  		"x": 53,
+  		"y": 0,
+  		"r": 0
+  	}
+  }
+);
 scene2.scale.x = GAME_SCALE;
 scene2.scale.y = GAME_SCALE;
 var scene3 = new PIXI.Container();
@@ -33,6 +93,10 @@ stage.addChild(scene2);
 stage.addChild(scene3);
 current_screen = scene1;
 
+emitter.emit = true;
+emitter.updateSpawnPos(550, 500);
+
+var elapsed = Date.now();
 function mouseHandler(e)
 {
   current_screen = scene2;
@@ -121,12 +185,18 @@ function is_death()
 function animate_start_screen()
 {
  renderer.render(scene1);
+
  requestAnimationFrame(animate_start_screen);
 }
 //animates the game screen
 function animate_game()
 {
   renderer.render(scene2);
+  var now = Date.now();
+
+
+   emitter.update((now - elapsed) * 0.001);
+   elapsed = now;
   update_camera();
   requestAnimationFrame(animate_game);
 }
@@ -160,7 +230,7 @@ function onKeyDown(key)
  {
    dy = -1;
    //checks to make sure you arent at the edge of the world
-   if(player.position.y >= 0)
+   if(player.position.y >= -10)
    {
      new_y = player.position.y -18;
      createjs.Tween.get(player.position).to({x: player.position.x, y: new_y},500);
